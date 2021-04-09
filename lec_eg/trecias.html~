@@ -1,0 +1,26 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+   <h1>
+      Labas, tai trečias (neindeksinis) html failas
+   </h1>
+   
+   <h2>Kiti failai: </h2>
+   <ul>
+     <li> 
+         <a href="pirmas.html"> Pirmas ... </a> 
+     </li>
+     <li>
+         <a href="antras.html"> Antras ... </a> 
+     </li>
+     <li> 
+         <a href="index.html"> Pradžia ... </a> 
+     </li>
+
+   </ul>  
+
+</body>
+</html>
+

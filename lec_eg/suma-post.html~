@@ -1,0 +1,18 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+   <h1>
+      Labas, tai cgi kvietimo apdorojimo pavyzdys
+   </h1>
+   
+   <h2>Forma </h2>
+   <form action = "/cgi-bin/suma.py" method = "get">
+        Pirmas skaičius: <input type = "text" name = "n1">  <br />
+        Antras skaičius: <input type = "text" name = "n2"/>
+        <input type = "submit" value = "Skaičiuok" />   
+   </form>
+</body>
+</html>
+
