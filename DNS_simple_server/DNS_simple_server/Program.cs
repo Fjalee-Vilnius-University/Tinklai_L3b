@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace DNS_simple_server
+﻿namespace DNS_simple_server
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            new Server();
         }
     }
 }
