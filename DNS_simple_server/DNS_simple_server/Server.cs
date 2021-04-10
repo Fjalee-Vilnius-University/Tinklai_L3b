@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 
 namespace DNS_simple_server
 {
@@ -10,11 +13,14 @@ namespace DNS_simple_server
         private readonly IPAddress ip = IPAddress.Parse("127.0.0.1");
         private readonly int maxLen = 253;
 
+        private readonly string dnsTablePath = @"../../../../dnsTable.txt";
+        private readonly Dictionary<string, string> dnsTable = new Dictionary<string, string>();
 
         public Server()
         {
-            Socket socFd = null;
+            GetDnsTable();
 
+            Socket socFd = null;
             try
             {
                 socFd = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -40,7 +46,24 @@ namespace DNS_simple_server
                     Console.WriteLine("Exception occured: \n\n" + e.ToString() + "\n");
                 }
             }
+        }
 
+        private void GetDnsTable()
+        {
+            foreach (string line in File.ReadLines(dnsTablePath))
+            {
+                var temp = line.Split(" ");
+                if (temp.Length == 2)
+                {
+                    var websiteRgx = new Regex(@"^www\..*\..*$");
+                    var ipRgx = new Regex(@"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$");
+
+                    if (websiteRgx.IsMatch(temp[0]) && ipRgx.IsMatch(temp[1]))
+                    {
+                        dnsTable.Add(temp[0], temp[1]);
+                    }
+                }
+            }
         }
     }
 }
