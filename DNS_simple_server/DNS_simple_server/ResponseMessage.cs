@@ -75,11 +75,20 @@ namespace DNS_simple_server
             statusBlock = SetBitInByteArr(statusBlock, 9, false);
             statusBlock = SetBitInByteArr(statusBlock, 10, false);
             statusBlock = SetBitInByteArr(statusBlock, 11, false);
-            //fix 11th bit 0 - no error, 1 - cant format, 2 - problem with dns server, 3 - does not exist
             statusBlock = SetBitInByteArr(statusBlock, 12, false);
             statusBlock = SetBitInByteArr(statusBlock, 13, false);
-            statusBlock = SetBitInByteArr(statusBlock, 14, false);
-            statusBlock = SetBitInByteArr(statusBlock, 15, false);
+
+            if (RespIpAdress == null)
+            {
+                statusBlock = SetBitInByteArr(statusBlock, 14, true);
+                statusBlock = SetBitInByteArr(statusBlock, 15, true);
+            }
+            else
+            {
+                statusBlock = SetBitInByteArr(statusBlock, 14, false);
+                statusBlock = SetBitInByteArr(statusBlock, 15, false);
+
+            }
 
             return statusBlock;
         }
