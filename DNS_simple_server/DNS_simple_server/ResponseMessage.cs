@@ -51,19 +51,6 @@ namespace DNS_simple_server
 
         private byte[] BuildStatusBlock(QueryMessage queryMsg)
         {
-            //1
-            //4bits copied
-            //1
-            //0
-            //1bit copied
-            //0
-            //0000
-            //4bits
-            //0 - no error
-            //1 - cant format
-            //2 - problem with dns server
-            //3 - does not exist
-
             var statusBlock = new byte[queryMsg.Status.Length];
             Array.Copy(queryMsg.Status, 0, statusBlock, 0, statusBlock.Length);
 
