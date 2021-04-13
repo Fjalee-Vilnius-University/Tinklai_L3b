@@ -17,25 +17,24 @@ namespace DNS_simple_server
         private const int qTYPELen = 2;
         private const int qCLASSLen = 2;
 
-        public byte[] Question { get; }
-        public byte[] MessageId { get; } = new byte[messageIdLen];
-        public byte[] RecDesBit { get; } = new byte[recDesBitLen];
-        public byte[] NmQuestions { get; } = new byte[nmQuestionsLen];
-        public byte[] NmAnswers { get; } = new byte[nmAnswersLen];
-        public byte[] NameServerRec { get; } = new byte[nameServerRecLen];
-        public byte[] AddServerRec { get; } = new byte[addServerRecLen];
-        public byte[] QTYPE { get; } = new byte[qTYPELen];
-        public byte[] QCLASS { get; } = new byte[qCLASSLen];
+        private readonly byte[] buffer = new byte[maxLen];
 
+        public byte[] Question { get; set; }
+        public byte[] MessageId { get; set; } = new byte[messageIdLen];
+        public byte[] RecDesBit { get; set; } = new byte[recDesBitLen];
+        public byte[] NmQuestions { get; set; } = new byte[nmQuestionsLen];
+        public byte[] NmAnswers { get; set; } = new byte[nmAnswersLen];
+        public byte[] NameServerRec { get; set; } = new byte[nameServerRecLen];
+        public byte[] AddServerRec { get; set; } = new byte[addServerRecLen];
+        public byte[] QTYPE { get; set; } = new byte[qTYPELen];
+        public byte[] QCLASS { get; set; } = new byte[qCLASSLen];
 
-        public string ParsedDomainName { get; }
+        public string ParsedDomainName { get; set; }
 
 
 
         public QueryMessage(Socket socFd)
         {
-            byte[] buffer = new byte[maxLen];
-
             try
             {
                 int recBytes;
@@ -45,7 +44,10 @@ namespace DNS_simple_server
             {
                 Console.WriteLine("Exception occured: \n\n" + e.ToString() + "\n");
             }
+        }
 
+        public void Parse()
+        {
             int offset = 0;
 
             MessageId = ParseBlock(buffer, messageIdLen, ref offset);
@@ -67,8 +69,6 @@ namespace DNS_simple_server
             Console.WriteLine("Response domainName: " + System.Text.Encoding.Default.GetString(Question));
             Console.WriteLine("Parsed: " + ParsedDomainName + "\n");
         }
-
-
 
         private byte[] ParseBlock(byte[] buffer, int blockLen, ref int offset)
         {
