@@ -67,25 +67,29 @@ namespace DNS_simple_server
             var statusBlock = new byte[queryMsg.Status.Length];
             Array.Copy(queryMsg.Status, 0, statusBlock, 0, statusBlock.Length);
 
-            statusBlock = SetBitInByteArr(statusBlock, 0, true);
-            statusBlock = SetBitInByteArr(statusBlock, 5, true);
-            statusBlock = SetBitInByteArr(statusBlock, 6, false);
-            statusBlock = SetBitInByteArr(statusBlock, 8, false);
-            statusBlock = SetBitInByteArr(statusBlock, 9, false);
-            statusBlock = SetBitInByteArr(statusBlock, 10, false);
-            statusBlock = SetBitInByteArr(statusBlock, 11, false);
-            statusBlock = SetBitInByteArr(statusBlock, 12, false);
-            statusBlock = SetBitInByteArr(statusBlock, 13, false);
+            statusBlock = SetBitInByteArr(statusBlock, 7, true); //shows that its response
+            statusBlock = SetBitInByteArr(statusBlock, 2, true); //shows that authority server
+            statusBlock = SetBitInByteArr(statusBlock, 1, false); //no truncation
+            statusBlock = SetBitInByteArr(statusBlock, 0, false); //no recursion desired 
 
+            //Future
+            statusBlock = SetBitInByteArr(statusBlock, 15, false);
+            statusBlock = SetBitInByteArr(statusBlock, 14, false);
+            statusBlock = SetBitInByteArr(statusBlock, 13, false);
+            statusBlock = SetBitInByteArr(statusBlock, 12, false);
+
+            //RCode
+            statusBlock = SetBitInByteArr(statusBlock, 11, false);
+            statusBlock = SetBitInByteArr(statusBlock, 10, false);
             if (RespIpAdress == null)
-            {
-                statusBlock = SetBitInByteArr(statusBlock, 14, true);
-                statusBlock = SetBitInByteArr(statusBlock, 15, true);
+            { // RCode - 3 - cant find ip
+                statusBlock = SetBitInByteArr(statusBlock, 8, true);
+                statusBlock = SetBitInByteArr(statusBlock, 9, true);
             }
             else
-            {
-                statusBlock = SetBitInByteArr(statusBlock, 14, false);
-                statusBlock = SetBitInByteArr(statusBlock, 15, false);
+            { // RCode - 0 - no error
+                statusBlock = SetBitInByteArr(statusBlock, 8, false);
+                statusBlock = SetBitInByteArr(statusBlock, 9, false);
 
             }
 
