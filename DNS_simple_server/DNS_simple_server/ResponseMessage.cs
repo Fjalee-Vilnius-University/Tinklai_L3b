@@ -8,11 +8,9 @@ namespace DNS_simple_server
     {
         private const int maxLen = 513;
         private const int ttl = 255;
-        public byte[] Buffer { get; set; } = new byte[maxLen];
 
-        public ResponseMessage()
-        {
-        }
+        public byte[] Buffer { get; set; } = new byte[maxLen];
+        public IPAddress RespIpAdress { get; set; }
 
         public void Build(QueryMessage queryMsg)
         {
@@ -30,16 +28,22 @@ namespace DNS_simple_server
             CopyToBuffer(queryMsg.QTYPE, ref offset);
             CopyToBuffer(queryMsg.QCLASS, ref offset);
 
+            //ANSWER
             CopyToBuffer(new byte[1] { 192 }, ref offset); //192 is 2 left most bits set to 1
             CopyToBuffer(new byte[1] { 12 }, ref offset); //at 12 bytes label starts
             CopyToBuffer(queryMsg.QTYPE, ref offset);
             CopyToBuffer(queryMsg.QCLASS, ref offset);
-
-            //ANSWER
             CopyToBuffer(new byte[1] { ttl }, ref offset); //TTL
-            //fix temp ip as constant for now
-            CopyToBuffer(new byte[1] { (byte)IPAddress.Parse("216.58.208.206").GetAddressBytes().Length }, ref offset);
-            CopyToBuffer(IPAddress.Parse("216.58.208.206").GetAddressBytes(), ref offset);
+            if (RespIpAdress != null)
+            {
+                CopyToBuffer(new byte[1] { (byte)RespIpAdress.GetAddressBytes().Length }, ref offset);
+                CopyToBuffer(RespIpAdress.GetAddressBytes(), ref offset);
+            }
+            else
+            {
+                CopyToBuffer(new byte[1] { 0 }, ref offset);
+                CopyToBuffer(RespIpAdress.GetAddressBytes(), ref offset);
+            }
             Buffer = TrimZeros(Buffer);
         }
 

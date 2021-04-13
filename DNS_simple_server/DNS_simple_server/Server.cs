@@ -26,7 +26,11 @@ namespace DNS_simple_server
                 var queryMsg = new QueryMessage(socFd);
                 queryMsg.Parse();
 
-                new ResponseMessage().Build(queryMsg);
+                var respIpAdress = GetIP(queryMsg.ParsedDomainName);
+
+                var respMsg = new ResponseMessage();
+                respMsg.RespIpAdress = respIpAdress;
+                respMsg.Build(queryMsg);
             }
         }
 
@@ -55,13 +59,13 @@ namespace DNS_simple_server
             }
         }
 
-        private string GetIP(string reqLink)
+        private IPAddress GetIP(string reqLink)
         {
             string foundIp;
             if (dnsTable.TryGetValue(reqLink, out foundIp))
             {
                 Console.WriteLine(reqLink + " - " + foundIp);
-                return foundIp;
+                return IPAddress.Parse("216.58.208.206");
             }
             else
             {
