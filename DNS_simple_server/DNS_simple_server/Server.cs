@@ -28,8 +28,6 @@ namespace DNS_simple_server
 
                 GetDnsTable();
                 var respIpAdress = GetIP(queryMsg.ParsedDomainName);
-                respIpAdress = GetIP("youtube.com");
-
 
                 var respMsg = new ResponseMessage();
                 respMsg.RespIpAdress = respIpAdress;
