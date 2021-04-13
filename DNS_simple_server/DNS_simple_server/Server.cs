@@ -26,13 +26,12 @@ namespace DNS_simple_server
                 var queryMsg = new QueryMessage(socFd);
                 queryMsg.Parse();
 
-                GetDnsTable();
                 var respIpAdress = GetIP(queryMsg.ParsedDomainName);
 
                 var respMsg = new ResponseMessage();
                 respMsg.RespIpAdress = respIpAdress;
                 respMsg.Build(queryMsg);
-                respMsg.Respond(socFd);
+                respMsg.Respond(new IPEndPoint(dnsIp, port), socFd);
             }
         }
 
