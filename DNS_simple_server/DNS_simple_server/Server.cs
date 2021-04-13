@@ -23,7 +23,10 @@ namespace DNS_simple_server
 
             while (true)
             {
-                new QueryMessage(socFd).Parse();
+                var queryMsg = new QueryMessage(socFd);
+                queryMsg.Parse();
+
+                new ResponseMessage().Build(queryMsg);
             }
         }
 
