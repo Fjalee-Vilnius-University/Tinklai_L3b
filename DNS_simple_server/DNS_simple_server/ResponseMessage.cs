@@ -43,7 +43,6 @@ namespace DNS_simple_server
             else
             {
                 AddBlock(new byte[4] { 0, 0, 0, 0 }, tempBuffer, ref offset);
-                AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
             }
 
             Buffer = new byte[offset];
