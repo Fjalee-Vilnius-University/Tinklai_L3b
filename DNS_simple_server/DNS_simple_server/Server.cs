@@ -65,7 +65,7 @@ namespace DNS_simple_server
             if (dnsTable.TryGetValue(reqLink, out foundIp))
             {
                 Console.WriteLine(reqLink + " - " + foundIp);
-                return IPAddress.Parse("216.58.208.206");
+                return IPAddress.Parse(foundIp);
             }
             else
             {
