@@ -40,8 +40,21 @@ namespace DNS_simple_server
             //fix temp ip as constant for now
             CopyToBuffer(new byte[1] { (byte)IPAddress.Parse("216.58.208.206").GetAddressBytes().Length }, ref offset);
             CopyToBuffer(IPAddress.Parse("216.58.208.206").GetAddressBytes(), ref offset);
+            Buffer = TrimZeros(Buffer);
         }
 
+        private byte[] TrimZeros(byte[] bytes)
+        {
+            if (bytes.Length == 0) return bytes;
+            var i = bytes.Length - 1;
+            while (bytes[i] == 0)
+            {
+                i--;
+            }
+            Byte[] copy = new Byte[i + 1];
+            Array.Copy(bytes, copy, i + 1);
+            return copy;
+        }
 
         private byte[] BuildStatusBlock(QueryMessage queryMsg)
         {
