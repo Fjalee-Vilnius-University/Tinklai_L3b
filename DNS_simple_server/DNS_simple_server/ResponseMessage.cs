@@ -18,7 +18,7 @@ namespace DNS_simple_server
             CopyToBuffer(queryMsg.MessageId, ref offset);
             CopyToBuffer(queryMsg.RecDesBit, ref offset);
             CopyToBuffer(queryMsg.NmQuestions, ref offset);
-            CopyToBuffer(queryMsg.NmAnswers, ref offset);
+            CopyToBuffer(BitConverter.GetBytes(1), ref offset);
             CopyToBuffer(queryMsg.NameServerRec, ref offset);
             CopyToBuffer(queryMsg.AddServerRec, ref offset);
         }
