@@ -9,55 +9,45 @@ namespace DNS_simple_server
         private const int maxLen = 513;
         private const int ttl = 255;
 
-        public byte[] Buffer { get; set; } = new byte[maxLen];
+        public byte[] Buffer { get; set; }
         public IPAddress RespIpAdress { get; set; }
 
         public void Build(QueryMessage queryMsg)
         {
             var offset = 0;
+            var tempBuffer = new byte[maxLen];
 
             //HEADER
-            CopyToBuffer(queryMsg.MessageId, ref offset);
-            CopyToBuffer(BuildStatusBlock(queryMsg), ref offset);
-            CopyToBuffer(queryMsg.NmQuestions, ref offset);
-            CopyToBuffer(new byte[2] { 0, 1 }, ref offset);
-            CopyToBuffer(queryMsg.NameServerRec, ref offset);
-            CopyToBuffer(queryMsg.AddServerRec, ref offset);
+            AddBlock(queryMsg.MessageId, tempBuffer, ref offset);
+            AddBlock(BuildStatusBlock(queryMsg), tempBuffer, ref offset);
+            AddBlock(queryMsg.NmQuestions, tempBuffer, ref offset);
+            AddBlock(new byte[2] { 0, 1 }, tempBuffer, ref offset);
+            AddBlock(queryMsg.NameServerRec, tempBuffer, ref offset);
+            AddBlock(queryMsg.AddServerRec, tempBuffer, ref offset);
 
-            CopyToBuffer(queryMsg.Question, ref offset);
-            CopyToBuffer(queryMsg.QTYPE, ref offset);
-            CopyToBuffer(queryMsg.QCLASS, ref offset);
+            AddBlock(queryMsg.Question, tempBuffer, ref offset);
+            AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
+            AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
 
             //ANSWER
-            CopyToBuffer(new byte[1] { 192 }, ref offset); //192 is 2 left most bits set to 1
-            CopyToBuffer(new byte[1] { 12 }, ref offset); //at 12 bytes label starts
-            CopyToBuffer(queryMsg.QTYPE, ref offset);
-            CopyToBuffer(queryMsg.QCLASS, ref offset);
-            CopyToBuffer(new byte[1] { ttl }, ref offset); //TTL
+            AddBlock(new byte[1] { 192 }, tempBuffer, ref offset); //192 is 2 left most bits set to 1
+            AddBlock(new byte[1] { 12 }, tempBuffer, ref offset); //at 12 bytes label starts
+            AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
+            AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
+            AddBlock(new byte[1] { ttl }, tempBuffer, ref offset); //TTL
             if (RespIpAdress != null)
             {
-                CopyToBuffer(new byte[1] { (byte)RespIpAdress.GetAddressBytes().Length }, ref offset);
-                CopyToBuffer(RespIpAdress.GetAddressBytes(), ref offset);
+                AddBlock(new byte[1] { (byte)RespIpAdress.GetAddressBytes().Length }, tempBuffer, ref offset);
+                AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
             }
             else
             {
-                CopyToBuffer(new byte[1] { 0 }, ref offset);
-                CopyToBuffer(RespIpAdress.GetAddressBytes(), ref offset);
+                AddBlock(new byte[4] { 0, 0, 0, 0 }, tempBuffer, ref offset);
+                AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
             }
-            Buffer = TrimZeros(Buffer);
-        }
 
-        private byte[] TrimZeros(byte[] bytes)
-        {
-            if (bytes.Length == 0) return bytes;
-            var i = bytes.Length - 1;
-            while (bytes[i] == 0)
-            {
-                i--;
-            }
-            Byte[] copy = new Byte[i + 1];
-            Array.Copy(bytes, copy, i + 1);
-            return copy;
+            Buffer = new byte[offset];
+            Array.Copy(tempBuffer, Buffer, offset);
         }
 
         private byte[] BuildStatusBlock(QueryMessage queryMsg)
@@ -103,10 +93,11 @@ namespace DNS_simple_server
             return byteArr;
         }
 
-        public void CopyToBuffer(byte[] source, ref int offset)
+        public byte[] AddBlock(byte[] source, byte[] dest, ref int offset)
         {
-            Array.Copy(source, 0, Buffer, offset, source.Length);
+            Array.Copy(source, 0, dest, offset, source.Length);
             offset += source.Length;
+            return dest;
         }
     }
 }
