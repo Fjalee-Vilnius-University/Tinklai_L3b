@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Net;
 
 namespace DNS_simple_server
 {
     public class ResponseMessage
     {
         private const int maxLen = 513;
+        private const int ttl = 255;
         public byte[] Buffer { get; set; } = new byte[maxLen];
 
         public ResponseMessage()
@@ -16,13 +18,30 @@ namespace DNS_simple_server
         {
             var offset = 0;
 
+            //HEADER
             CopyToBuffer(queryMsg.MessageId, ref offset);
             CopyToBuffer(BuildStatusBlock(queryMsg), ref offset);
             CopyToBuffer(queryMsg.NmQuestions, ref offset);
             CopyToBuffer(new byte[2] { 0, 1 }, ref offset);
             CopyToBuffer(queryMsg.NameServerRec, ref offset);
             CopyToBuffer(queryMsg.AddServerRec, ref offset);
+
+            CopyToBuffer(queryMsg.Question, ref offset);
+            CopyToBuffer(queryMsg.QTYPE, ref offset);
+            CopyToBuffer(queryMsg.QCLASS, ref offset);
+
+            CopyToBuffer(new byte[1] { 192 }, ref offset); //192 is 2 left most bits set to 1
+            CopyToBuffer(new byte[1] { 12 }, ref offset); //at 12 bytes label starts
+            CopyToBuffer(queryMsg.QTYPE, ref offset);
+            CopyToBuffer(queryMsg.QCLASS, ref offset);
+
+            //ANSWER
+            CopyToBuffer(new byte[1] { ttl }, ref offset); //TTL
+            //fix temp ip as constant for now
+            CopyToBuffer(new byte[1] { (byte)IPAddress.Parse("216.58.208.206").GetAddressBytes().Length }, ref offset);
+            CopyToBuffer(IPAddress.Parse("216.58.208.206").GetAddressBytes(), ref offset);
         }
+
 
         private byte[] BuildStatusBlock(QueryMessage queryMsg)
         {
