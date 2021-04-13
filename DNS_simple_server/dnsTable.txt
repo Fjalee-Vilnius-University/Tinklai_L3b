@@ -1,3 +1,4 @@
-www.google.com 196.0.4.366
-www.yahoo.com 185.23.5.9
-www.tamo.lt 142.67.8.3
+google.com 196.0.4.366
+yahoo.com 185.23.5.9
+tamo.lt 142.67.8.3
+youtube.com 216.58.208.206

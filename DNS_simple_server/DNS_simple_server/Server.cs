@@ -8,7 +8,19 @@ using System.Text.RegularExpressions;
 
 namespace DNS_simple_server
 {
+    //REQUEST
+    //    Header
+    //        2 message identifier(2first bytes response)
+    //        2 recursion desired bit
+    //        2 how many questions
+    //        2 how many answers
+    //        2 name server records
+    //        2 additional records
 
+    //    Question
+    //        255 of less - domainName
+    //        2 QTYPE
+    //        2 QCLASS
 
     public class Server
     {
@@ -50,13 +62,31 @@ namespace DNS_simple_server
                 }
 
                 var offset = 12;
+                var initOffset = offset;
                 var domainName = ParseDomainName(buffer, ref offset);
+
+                var respDomainName = ParseRespDomainName(offset, initOffset, buffer);
+                BuildResponse(respDomainName);
 
 
                 //fix delete
                 Console.WriteLine("Received: " + System.Text.Encoding.Default.GetString(buffer));
+                Console.WriteLine("Response domainName: " + System.Text.Encoding.Default.GetString(respDomainName));
                 Console.WriteLine("Parsed: " + domainName + "\n");
             }
+        }
+
+        byte[] ParseRespDomainName(int offset, int initOffset, byte[] buffer)
+        {
+            var respDomainNameLen = offset - initOffset + 1;
+            var respDomainName = new byte[respDomainNameLen];
+            Array.Copy(buffer, initOffset, respDomainName, 0, respDomainNameLen);
+            return respDomainName;
+        }
+
+        void BuildResponse(byte[] domainName)
+        {
+
         }
 
         string ParseDomainName(byte[] buffer, ref int offset)
