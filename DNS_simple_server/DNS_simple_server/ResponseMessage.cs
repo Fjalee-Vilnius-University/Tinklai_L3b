@@ -34,6 +34,8 @@ namespace DNS_simple_server
             AddBlock(new byte[1] { 12 }, tempBuffer, ref offset); //at 12 bytes label starts
             AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
             AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
+            
+            
             AddBlock(new byte[1] { ttl }, tempBuffer, ref offset); //TTL
             if (RespIpAdress != null)
             {

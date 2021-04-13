@@ -26,7 +26,10 @@ namespace DNS_simple_server
                 var queryMsg = new QueryMessage(socFd);
                 queryMsg.Parse();
 
+                GetDnsTable();
                 var respIpAdress = GetIP(queryMsg.ParsedDomainName);
+                respIpAdress = GetIP("youtube.com");
+
 
                 var respMsg = new ResponseMessage();
                 respMsg.RespIpAdress = respIpAdress;
@@ -48,7 +51,7 @@ namespace DNS_simple_server
                     {
                         try
                         {
-                            dnsTable.Add(temp[0], temp[1]);
+                            dnsTable.Add(temp[0].Substring(4), temp[1]);
                         }
                         catch
                         {
@@ -62,6 +65,7 @@ namespace DNS_simple_server
         private IPAddress GetIP(string reqLink)
         {
             string foundIp;
+
             if (dnsTable.TryGetValue(reqLink, out foundIp))
             {
                 Console.WriteLine(reqLink + " - " + foundIp);
@@ -69,7 +73,7 @@ namespace DNS_simple_server
             }
             else
             {
-                Console.WriteLine(reqLink + " no in the DNS table");
+                Console.WriteLine(reqLink + " not in the DNS table");
                 return null;
             }
         }
