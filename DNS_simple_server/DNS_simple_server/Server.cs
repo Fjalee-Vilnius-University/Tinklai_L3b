@@ -19,17 +19,7 @@ namespace DNS_simple_server
         {
             GetDnsTable();
 
-            Socket socFd = null;
-            try
-            {
-                socFd = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                socFd.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                socFd.Bind(new IPEndPoint(dnsIp, port));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception occured: \n" + e.ToString());
-            }
+            Socket socFd = CreateSocket();
 
             while (true)
             {
@@ -75,6 +65,24 @@ namespace DNS_simple_server
                 Console.WriteLine(reqLink + " no in the DNS table");
                 return null;
             }
+        }
+
+        private Socket CreateSocket()
+        {
+            Socket socFd = null;
+            try
+            {
+                socFd = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                socFd.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                socFd.Bind(new IPEndPoint(dnsIp, port));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception occured: \n" + e.ToString());
+                Environment.Exit(1);
+            }
+
+            return socFd;
         }
     }
 }
