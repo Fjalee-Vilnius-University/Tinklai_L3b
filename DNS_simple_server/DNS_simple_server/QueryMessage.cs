@@ -7,11 +7,6 @@ namespace DNS_simple_server
 {
     public class QueryMessage
     {
-        //    Question
-        //        255 of less - domainName
-        //        2 QTYPE
-        //        2 QCLASS
-
         private const int maxLen = 513;
         private const int messageIdLen = 2;
         private const int recDesBitLen = 2;
@@ -73,7 +68,9 @@ namespace DNS_simple_server
             Console.WriteLine("Parsed: " + ParsedDomainName + "\n");
         }
 
-        byte[] ParseBlock(byte[] buffer, int blockLen, ref int offset)
+
+
+        private byte[] ParseBlock(byte[] buffer, int blockLen, ref int offset)
         {
             byte[] parsedBlock = new byte[blockLen];
             Array.Copy(buffer, offset, parsedBlock, 0, blockLen);
@@ -81,7 +78,7 @@ namespace DNS_simple_server
             return parsedBlock;
         }
 
-        byte[] ParseQuestion(int offset, int initOffset, byte[] buffer)
+        private byte[] ParseQuestion(int offset, int initOffset, byte[] buffer)
         {
             var respDomainNameLen = offset - initOffset + 1;
             var respDomainName = new byte[respDomainNameLen];
@@ -89,7 +86,7 @@ namespace DNS_simple_server
             return respDomainName;
         }
 
-        string ParseDomainName(byte[] buffer, ref int offset)
+        private string ParseDomainName(byte[] buffer, ref int offset)
         {
             var labels = new List<string>();
 
@@ -101,7 +98,7 @@ namespace DNS_simple_server
             return labels.Aggregate((i, j) => i + "." + j);
         }
 
-        string ParseLabel(byte[] buffer, ref int offset)
+        private string ParseLabel(byte[] buffer, ref int offset)
         {
             var label = new byte[maxLen];
             var labelLen = Convert.ToInt16(buffer[offset]);
