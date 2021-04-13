@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Net;
+using System.Net.Sockets;
 
 namespace DNS_simple_server
 {
@@ -34,8 +35,8 @@ namespace DNS_simple_server
             AddBlock(new byte[1] { 12 }, tempBuffer, ref offset); //at 12 bytes label starts
             AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
             AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
-            
-            
+
+
             AddBlock(new byte[1] { ttl }, tempBuffer, ref offset); //TTL
             if (RespIpAdress != null)
             {
@@ -49,6 +50,11 @@ namespace DNS_simple_server
 
             Buffer = new byte[offset];
             Array.Copy(tempBuffer, Buffer, offset);
+        }
+
+        public void Respond(Socket socFd)
+        {
+            socFd.Send(Buffer);
         }
 
         private byte[] BuildStatusBlock(QueryMessage queryMsg)

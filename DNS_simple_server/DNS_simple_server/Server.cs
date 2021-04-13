@@ -32,6 +32,7 @@ namespace DNS_simple_server
                 var respMsg = new ResponseMessage();
                 respMsg.RespIpAdress = respIpAdress;
                 respMsg.Build(queryMsg);
+                respMsg.Respond(socFd);
             }
         }
 
