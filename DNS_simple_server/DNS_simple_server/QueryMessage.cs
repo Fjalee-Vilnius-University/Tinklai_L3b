@@ -9,7 +9,7 @@ namespace DNS_simple_server
     {
         private const int maxLen = 513;
         private const int messageIdLen = 2;
-        private const int recDesBitLen = 2;
+        private const int statusLen = 2;
         private const int nmQuestionsLen = 2;
         private const int nmAnswersLen = 2;
         private const int nameServerRecLen = 2;
@@ -21,7 +21,7 @@ namespace DNS_simple_server
 
         public byte[] Question { get; set; }
         public byte[] MessageId { get; set; } = new byte[messageIdLen];
-        public byte[] RecDesBit { get; set; } = new byte[recDesBitLen];
+        public byte[] Status { get; set; } = new byte[statusLen];
         public byte[] NmQuestions { get; set; } = new byte[nmQuestionsLen];
         public byte[] NmAnswers { get; set; } = new byte[nmAnswersLen];
         public byte[] NameServerRec { get; set; } = new byte[nameServerRecLen];
@@ -51,7 +51,7 @@ namespace DNS_simple_server
             int offset = 0;
 
             MessageId = ParseBlock(buffer, messageIdLen, ref offset);
-            RecDesBit = ParseBlock(buffer, recDesBitLen, ref offset);
+            Status = ParseBlock(buffer, statusLen, ref offset);
             NmQuestions = ParseBlock(buffer, nmQuestionsLen, ref offset);
             NmAnswers = ParseBlock(buffer, nmAnswersLen, ref offset);
             NameServerRec = ParseBlock(buffer, nameServerRecLen, ref offset);
