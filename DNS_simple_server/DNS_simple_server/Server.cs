@@ -11,7 +11,7 @@ namespace DNS_simple_server
     {
         private const int maxLen = 513;
         private readonly int port = 53;
-        private readonly IPAddress dnsIp = IPAddress.Parse("127.0.0.1");
+        private readonly IPAddress dnsIp = IPAddress.Parse("192.168.17.113");
 
         private readonly string dnsTablePath = @"../../../../dnsTable.txt";
         private readonly Dictionary<string, string> dnsTableV4 = new Dictionary<string, string>();
