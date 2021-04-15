@@ -19,22 +19,40 @@ namespace DNS_simple_server
         {
             GetDnsTable();
 
-            Socket socFd = CreateSocket();
+            //fix
+            //Socket socFd = CreateSocket();
+            IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+            UdpClient socFd = CreateSocket(ref sender);
 
             while (true)
             {
-                var queryMsg = new QueryMessage(socFd);
+                var queryMsg = new QueryMessage(socFd, ref sender);
+
                 queryMsg.Parse();
+
+
+                if (System.Text.Encoding.Default.GetString(queryMsg.QTYPE).CompareTo(System.Text.Encoding.Default.GetString(new byte[2] { 0, 28 })) == 0)
+                {
+                    //fix
+                    //Console.WriteLine("Sent: " + respMsg.Respond(new IPEndPoint(IPAddress.Parse("127.0.0.1"), port), socFd) + " bytes");
+
+
+                    var temp = 0;
+                }
 
                 var respIpAdress = GetIP(queryMsg.ParsedDomainName);
 
                 var respMsg = new ResponseMessage();
                 respMsg.RespIpAdress = respIpAdress;
                 respMsg.Build(queryMsg);
-                respMsg.Respond(new IPEndPoint(dnsIp, port), socFd);
+                //fix
+                Console.WriteLine("received Buffer: " + BitConverter.ToString(queryMsg.GetBuffer()));
+                Console.WriteLine("sent Buffer: " + BitConverter.ToString(respMsg.Buffer));
+                Console.WriteLine("Sent: " + socFd.Send(respMsg.Buffer, respMsg.Buffer.Length, sender) + " bytes");
+
+
             }
         }
-
         private void GetDnsTable()
         {
             foreach (string line in File.ReadLines(dnsTablePath))
@@ -76,22 +94,29 @@ namespace DNS_simple_server
             }
         }
 
-        private Socket CreateSocket()
+        private UdpClient CreateSocket(ref IPEndPoint sender)
         {
-            Socket socFd = null;
-            try
-            {
-                socFd = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                socFd.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                socFd.Bind(new IPEndPoint(dnsIp, port));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception occured: \n" + e.ToString());
-                Environment.Exit(1);
-            }
+            IPEndPoint ipep = new IPEndPoint(dnsIp, port);
+            UdpClient newsock = new UdpClient(ipep);
 
-            return socFd;
+            return newsock;
         }
+        //private Socket CreateSocket()
+        //{
+        //    Socket socFd = null;
+        //    try
+        //    {
+        //        socFd = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        //        socFd.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+        //        socFd.Bind(new IPEndPoint(dnsIp, port));
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine("Exception occured: \n" + e.ToString());
+        //        Environment.Exit(1);
+        //    }
+
+        //    return socFd;
+        //}
     }
 }

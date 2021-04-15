@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 
 namespace DNS_simple_server
@@ -31,14 +32,14 @@ namespace DNS_simple_server
 
         public string ParsedDomainName { get; set; }
 
-
-
-        public QueryMessage(Socket socFd)
+        public QueryMessage(UdpClient socFd, ref IPEndPoint sender)
         {
             try
             {
                 int recBytes;
-                recBytes = socFd.Receive(buffer, 0, maxLen, 0);
+                //fix
+                //recBytes = socFd.Receive(buffer, 0, maxLen, 0);
+                buffer = socFd.Receive(ref sender);
             }
             catch (Exception e)
             {
@@ -66,8 +67,13 @@ namespace DNS_simple_server
 
             //fix delete
             Console.WriteLine("Received: " + System.Text.Encoding.Default.GetString(buffer));
+            Console.WriteLine("QTYPE: " + BitConverter.ToString(QTYPE));
             Console.WriteLine("Response domainName: " + System.Text.Encoding.Default.GetString(Question));
             Console.WriteLine("Parsed: " + ParsedDomainName + "\n");
+        }
+        public static double ConvertByteArrayToInt32(byte[] param)
+        {
+            return BitConverter.ToInt32(param, 0);
         }
 
         private byte[] ParseBlock(byte[] buffer, int blockLen, ref int offset)
@@ -80,7 +86,7 @@ namespace DNS_simple_server
 
         private byte[] ParseQuestion(int offset, int initOffset, byte[] buffer)
         {
-            var respDomainNameLen = offset - initOffset + 1;
+            var respDomainNameLen = offset - initOffset;
             var respDomainName = new byte[respDomainNameLen];
             Array.Copy(buffer, initOffset, respDomainName, 0, respDomainNameLen);
             return respDomainName;
@@ -95,7 +101,13 @@ namespace DNS_simple_server
                 labels.Add(ParseLabel(buffer, ref offset));
             }
 
+            offset++; // for zero at the end of question
             return labels.Aggregate((i, j) => i + "." + j);
+        }
+
+        public byte[] GetBuffer()
+        {
+            return buffer;
         }
 
         private string ParseLabel(byte[] buffer, ref int offset)

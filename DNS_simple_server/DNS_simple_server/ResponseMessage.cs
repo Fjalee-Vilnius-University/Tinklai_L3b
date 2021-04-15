@@ -8,7 +8,7 @@ namespace DNS_simple_server
     public class ResponseMessage
     {
         private const int maxLen = 513;
-        private const int ttl = 255;
+        private const int ttl = 137;
 
         public byte[] Buffer { get; set; }
         public IPAddress RespIpAdress { get; set; }
@@ -22,7 +22,14 @@ namespace DNS_simple_server
             AddBlock(queryMsg.MessageId, tempBuffer, ref offset);
             AddBlock(BuildStatusBlock(queryMsg), tempBuffer, ref offset);
             AddBlock(queryMsg.NmQuestions, tempBuffer, ref offset);
-            AddBlock(new byte[2] { 0, 1 }, tempBuffer, ref offset);
+            if (RespIpAdress != null)
+            {
+                AddBlock(new byte[2] { 0, 1 }, tempBuffer, ref offset);
+            }
+            else
+            {
+                AddBlock(new byte[2] { 0, 0 }, tempBuffer, ref offset);
+            }
             AddBlock(queryMsg.NameServerRec, tempBuffer, ref offset);
             AddBlock(queryMsg.AddServerRec, tempBuffer, ref offset);
 
@@ -30,31 +37,50 @@ namespace DNS_simple_server
             AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
             AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
 
-            //ANSWER
-            AddBlock(new byte[1] { 192 }, tempBuffer, ref offset); //192 is 2 left most bits set to 1
-            AddBlock(new byte[1] { 12 }, tempBuffer, ref offset); //at 12 bytes label starts
-            AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
-            AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
 
 
-            AddBlock(new byte[1] { ttl }, tempBuffer, ref offset); //TTL
             if (RespIpAdress != null)
             {
-                AddBlock(new byte[1] { (byte)RespIpAdress.GetAddressBytes().Length }, tempBuffer, ref offset);
-                AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
-            }
-            else
-            {
-                AddBlock(new byte[4] { 0, 0, 0, 0 }, tempBuffer, ref offset);
+                //ANSWER
+                AddBlock(new byte[1] { 192 }, tempBuffer, ref offset); //192 is 2 left most bits set to 1
+                AddBlock(new byte[1] { 12 }, tempBuffer, ref offset); //at 12 bytes label starts
+                AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
+                AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
+                AddBlock(new byte[4] { 0, 0, 0, ttl }, tempBuffer, ref offset); //TTL
+
+
+                //fix
+                if (System.Text.Encoding.Default.GetString(queryMsg.QTYPE).CompareTo(System.Text.Encoding.Default.GetString(new byte[2] { 0, 28 })) == 0)
+                {
+                    //new byte[] { 2, 10, 0, 0, 1, 4, 5, 0, 4, 0, 1, 11, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 14 }
+                    //var RespIpAdress = IPAddress.Parse("2a00:1450:401b:800:0:0:0:200e");
+                    //var temp = RespIpAdress.GetAddressBytes();
+
+                    //AddBlock(new byte[2] { 0, 16 }, tempBuffer, ref offset);
+                    //AddBlock(new byte[16] { 42, 0, 20, 80, 64, 27, 8, 0, 0, 0, 0, 0, 0, 0, 32, 14 }, tempBuffer, ref offset);
+
+                }
+
+                else
+                {
+                    AddBlock(new byte[2] { 0, (byte)RespIpAdress.GetAddressBytes().Length }, tempBuffer, ref offset);
+                    AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
+                }
             }
 
             Buffer = new byte[offset];
             Array.Copy(tempBuffer, Buffer, offset);
+
+            //fix del
+            if (RespIpAdress != null)
+            {
+                var temp = 0;
+            }
         }
 
-        public void Respond(Socket socFd)
+        public int Respond(IPEndPoint endPoint, Socket socFd)
         {
-            socFd.Send(Buffer);
+            return socFd.SendTo(Buffer, endPoint);
         }
 
         private byte[] BuildStatusBlock(QueryMessage queryMsg)
@@ -63,12 +89,12 @@ namespace DNS_simple_server
             Array.Copy(queryMsg.Status, 0, statusBlock, 0, statusBlock.Length);
 
             statusBlock = SetBitInByteArr(statusBlock, 7, true); //shows that its response
-            statusBlock = SetBitInByteArr(statusBlock, 2, true); //shows that authority server
+            statusBlock = SetBitInByteArr(statusBlock, 2, false); //not authoritive server
             statusBlock = SetBitInByteArr(statusBlock, 1, false); //no truncation
-            statusBlock = SetBitInByteArr(statusBlock, 0, false); //no recursion desired 
+            statusBlock = SetBitInByteArr(statusBlock, 0, true); //no recursion desired 
 
+            statusBlock = SetBitInByteArr(statusBlock, 15, true); //recursion available
             //Future
-            statusBlock = SetBitInByteArr(statusBlock, 15, false);
             statusBlock = SetBitInByteArr(statusBlock, 14, false);
             statusBlock = SetBitInByteArr(statusBlock, 13, false);
             statusBlock = SetBitInByteArr(statusBlock, 12, false);
@@ -78,6 +104,12 @@ namespace DNS_simple_server
             statusBlock = SetBitInByteArr(statusBlock, 10, false);
             if (RespIpAdress == null)
             { // RCode - 3 - cant find ip
+                if (RespIpAdress != null)
+                {
+                    //fix del if
+                    var temp = 0;
+                }
+
                 statusBlock = SetBitInByteArr(statusBlock, 8, true);
                 statusBlock = SetBitInByteArr(statusBlock, 9, true);
             }
@@ -90,6 +122,7 @@ namespace DNS_simple_server
 
             return statusBlock;
         }
+
 
         private byte[] SetBitInByteArr(byte[] byteArr, int bitIndex, bool setVal)
         {
