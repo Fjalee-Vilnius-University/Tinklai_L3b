@@ -11,7 +11,7 @@ namespace DNS_simple_server
     {
         private const int maxLen = 513;
         private readonly int port = 53;
-        private readonly IPAddress dnsIp = IPAddress.Parse("192.168.17.113");
+        private readonly IPAddress dnsIp = IPAddress.Parse("84.32.123.2");
 
         private readonly string dnsTablePath = @"../../../../dnsTable.txt";
         private readonly Dictionary<string, string> dnsTableV4 = new Dictionary<string, string>();
@@ -79,7 +79,7 @@ namespace DNS_simple_server
                     {
                         try
                         {
-                            dnsTableV4.Add(temp[0], temp[1]);
+                            dnsTableV4.Add(temp[0].Substring(4), temp[1]);
                         }
                         catch
                         {
@@ -90,7 +90,7 @@ namespace DNS_simple_server
                     {
                         try
                         {
-                            dnsTableV6.Add(temp[0], temp[1]);
+                            dnsTableV6.Add(temp[0].Substring(4), temp[1]);
                         }
                         catch
                         {
