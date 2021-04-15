@@ -79,7 +79,7 @@ namespace DNS_simple_server
                     {
                         try
                         {
-                            dnsTableV4.Add(temp[0].Substring(4), temp[1]);
+                            dnsTableV4.Add(temp[0], temp[1]);
                         }
                         catch
                         {
@@ -90,7 +90,7 @@ namespace DNS_simple_server
                     {
                         try
                         {
-                            dnsTableV6.Add(temp[0].Substring(4), temp[1]);
+                            dnsTableV6.Add(temp[0], temp[1]);
                         }
                         catch
                         {
