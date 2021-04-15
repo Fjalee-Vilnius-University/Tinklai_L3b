@@ -22,7 +22,14 @@ namespace DNS_simple_server
             AddBlock(queryMsg.MessageId, tempBuffer, ref offset);
             AddBlock(BuildStatusBlock(queryMsg), tempBuffer, ref offset);
             AddBlock(queryMsg.NmQuestions, tempBuffer, ref offset);
-            AddBlock(new byte[2] { 0, 1 }, tempBuffer, ref offset);
+            if (RespIpAdress != null)
+            {
+                AddBlock(new byte[2] { 0, 1 }, tempBuffer, ref offset);
+            }
+            else
+            {
+                AddBlock(new byte[2] { 0, 0 }, tempBuffer, ref offset);
+            }
             AddBlock(queryMsg.NameServerRec, tempBuffer, ref offset);
             AddBlock(queryMsg.AddServerRec, tempBuffer, ref offset);
 
