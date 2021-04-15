@@ -47,7 +47,7 @@ namespace DNS_simple_server
                 AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
                 AddBlock(new byte[4] { 0, 0, 0, ttl }, tempBuffer, ref offset); //TTL
 
-                AddBlock(new byte[1] { (byte)RespIpAdress.GetAddressBytes().Length }, tempBuffer, ref offset);
+                AddBlock(new byte[2] { 0, (byte)RespIpAdress.GetAddressBytes().Length }, tempBuffer, ref offset);
                 AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
             }
 
