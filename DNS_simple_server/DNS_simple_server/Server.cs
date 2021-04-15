@@ -145,7 +145,6 @@ namespace DNS_simple_server
             catch (Exception e)
             {
                 Console.WriteLine("Exception occured: \n" + e.ToString());
-                Environment.Exit(1);
             }
 
             return socFd;
