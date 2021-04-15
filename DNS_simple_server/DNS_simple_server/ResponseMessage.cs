@@ -37,22 +37,18 @@ namespace DNS_simple_server
             AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
             AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
 
+
             //ANSWER
-            AddBlock(new byte[1] { 192 }, tempBuffer, ref offset); //192 is 2 left most bits set to 1
-            AddBlock(new byte[1] { 12 }, tempBuffer, ref offset); //at 12 bytes label starts
-            AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
-            AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
-
-
-            AddBlock(new byte[4] { 0, 0, 0, ttl }, tempBuffer, ref offset); //TTL
             if (RespIpAdress != null)
             {
+                AddBlock(new byte[1] { 192 }, tempBuffer, ref offset); //192 is 2 left most bits set to 1
+                AddBlock(new byte[1] { 12 }, tempBuffer, ref offset); //at 12 bytes label starts
+                AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
+                AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
+                AddBlock(new byte[4] { 0, 0, 0, ttl }, tempBuffer, ref offset); //TTL
+
                 AddBlock(new byte[1] { (byte)RespIpAdress.GetAddressBytes().Length }, tempBuffer, ref offset);
                 AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
-            }
-            else
-            {
-                AddBlock(new byte[4] { 0, 0, 0, 0 }, tempBuffer, ref offset);
             }
 
             Buffer = new byte[offset];
