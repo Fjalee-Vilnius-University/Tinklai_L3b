@@ -41,7 +41,17 @@ namespace DNS_simple_server
                 var queryMsg = new QueryMessage(buffer);
                 queryMsg.Parse();
 
-                var respIpAdress = GetIPv4(queryMsg.ParsedDomainName);
+                IPAddress respIpAdress;
+                if (System.Text.Encoding.Default.GetString(queryMsg.QTYPE).CompareTo(
+                    System.Text.Encoding.Default.GetString(new byte[2] { 0, 28 })
+                    ) == 0)
+                {
+                    respIpAdress = GetIPv6(queryMsg.ParsedDomainName);
+                }
+                else
+                {
+                    respIpAdress = GetIPv4(queryMsg.ParsedDomainName);
+                }
 
                 var respMsg = new ResponseMessage();
                 respMsg.RespIpAdress = respIpAdress;
@@ -97,6 +107,21 @@ namespace DNS_simple_server
             string foundIp;
 
             if (dnsTableV4.TryGetValue(reqLink, out foundIp))
+            {
+                Console.WriteLine(reqLink + " - " + foundIp);
+                return IPAddress.Parse(foundIp);
+            }
+            else
+            {
+                Console.WriteLine(reqLink + " not in the DNS table");
+                return null;
+            }
+        }
+        private IPAddress GetIPv6(string reqLink)
+        {
+            string foundIp;
+
+            if (dnsTableV6.TryGetValue(reqLink, out foundIp))
             {
                 Console.WriteLine(reqLink + " - " + foundIp);
                 return IPAddress.Parse(foundIp);
