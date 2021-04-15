@@ -45,30 +45,8 @@ namespace DNS_simple_server
                 AddBlock(queryMsg.QTYPE, tempBuffer, ref offset);
                 AddBlock(queryMsg.QCLASS, tempBuffer, ref offset);
                 AddBlock(new byte[4] { 0, 0, 0, ttl }, tempBuffer, ref offset); //TTL
-
-
-                ////fix
-                if (System.Text.Encoding.Default.GetString(queryMsg.QTYPE).CompareTo(System.Text.Encoding.Default.GetString(new byte[2] { 0, 28 })) == 0)
-                {
-                    //new byte[] { 2, 10, 0, 0, 1, 4, 5, 0, 4, 0, 1, 11, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 14 }
-                    //var RespIpAdress = IPAddress.Parse("2a00:1450:401b:800:0:0:0:200e");
-                    //var temp = RespIpAdress.GetAddressBytes();
-
-                    AddBlock(new byte[2] { 0, 16 }, tempBuffer, ref offset);
-                    AddBlock(new byte[16] { 42, 0, 20, 80, 64, 27, 8, 0, 0, 0, 0, 0, 0, 0, 32, 14 }, tempBuffer, ref offset);
-
-                }
-
-                else
-                {
-                    AddBlock(new byte[2] { 0, (byte)RespIpAdress.GetAddressBytes().Length }, tempBuffer, ref offset);
-                    AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
-                }
-
-
-                //fix
-                //AddBlock(new byte[2] { 0, (byte)RespIpAdress.GetAddressBytes().Length }, tempBuffer, ref offset);
-                //AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
+                AddBlock(new byte[2] { 0, (byte)RespIpAdress.GetAddressBytes().Length }, tempBuffer, ref offset);
+                AddBlock(RespIpAdress.GetAddressBytes(), tempBuffer, ref offset);
             }
 
             Buffer = new byte[offset];
