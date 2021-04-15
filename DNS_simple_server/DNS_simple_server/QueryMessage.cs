@@ -52,7 +52,6 @@ namespace DNS_simple_server
             QTYPE = ParseBlock(Buffer, qTYPELen, ref offset);
             QCLASS = ParseBlock(Buffer, qCLASSLen, ref offset);
 
-            //fix delete
             Console.WriteLine("Received: " + System.Text.Encoding.Default.GetString(Buffer));
             Console.WriteLine("QTYPE: " + BitConverter.ToString(QTYPE));
             Console.WriteLine("Response domainName: " + System.Text.Encoding.Default.GetString(Question));

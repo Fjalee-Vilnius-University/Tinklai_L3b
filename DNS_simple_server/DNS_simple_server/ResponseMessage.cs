@@ -12,8 +12,6 @@ namespace DNS_simple_server
         public byte[] Buffer { get; set; }
         public IPAddress RespIpAdress { get; set; }
 
-
-
         public ResponseMessage(IPAddress respIpAdress)
         {
             RespIpAdress = respIpAdress;
