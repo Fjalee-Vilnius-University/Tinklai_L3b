@@ -46,11 +46,11 @@ namespace DNS_simple_server
                     System.Text.Encoding.Default.GetString(new byte[2] { 0, 28 })
                     ) == 0)
                 {
-                    respIpAdress = GetIPv6(queryMsg.ParsedDomainName);
+                    respIpAdress = GetIPv6(queryMsg.ParsedDomainName.Substring(4));
                 }
                 else
                 {
-                    respIpAdress = GetIPv4(queryMsg.ParsedDomainName);
+                    respIpAdress = GetIPv4(queryMsg.ParsedDomainName.Substring(4));
                 }
 
                 var respMsg = new ResponseMessage(respIpAdress);
