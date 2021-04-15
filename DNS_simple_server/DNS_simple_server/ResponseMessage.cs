@@ -47,7 +47,7 @@ namespace DNS_simple_server
                 AddBlock(new byte[4] { 0, 0, 0, ttl }, tempBuffer, ref offset); //TTL
 
 
-                //fix
+                ////fix
                 if (System.Text.Encoding.Default.GetString(queryMsg.QTYPE).CompareTo(System.Text.Encoding.Default.GetString(new byte[2] { 0, 28 })) == 0)
                 {
                     //new byte[] { 2, 10, 0, 0, 1, 4, 5, 0, 4, 0, 1, 11, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 14 }

@@ -14,11 +14,11 @@ namespace DNS_simple_server
         private readonly IPAddress dnsIp = IPAddress.Parse("127.0.0.1");
 
         private readonly string dnsTablePath = @"../../../../dnsTable.txt";
-        private readonly Dictionary<string, string> dnsTable = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> dnsTableV4 = new Dictionary<string, string>();
 
         public Server()
         {
-            GetDnsTable();
+            GetdnsTableV4();
 
             Socket socFd = CreateSocket();
             IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
@@ -40,7 +40,7 @@ namespace DNS_simple_server
                 var queryMsg = new QueryMessage(buffer);
                 queryMsg.Parse();
 
-                var respIpAdress = GetIP(queryMsg.ParsedDomainName);
+                var respIpAdress = GetIPv4(queryMsg.ParsedDomainName);
 
                 var respMsg = new ResponseMessage();
                 respMsg.RespIpAdress = respIpAdress;
@@ -54,7 +54,7 @@ namespace DNS_simple_server
             }
         }
 
-        private void GetDnsTable()
+        private void GetdnsTableV4()
         {
             foreach (string line in File.ReadLines(dnsTablePath))
             {
@@ -68,7 +68,7 @@ namespace DNS_simple_server
                     {
                         try
                         {
-                            dnsTable.Add(temp[0].Substring(4), temp[1]);
+                            dnsTableV4.Add(temp[0].Substring(4), temp[1]);
                         }
                         catch
                         {
@@ -79,11 +79,11 @@ namespace DNS_simple_server
             }
         }
 
-        private IPAddress GetIP(string reqLink)
+        private IPAddress GetIPv4(string reqLink)
         {
             string foundIp;
 
-            if (dnsTable.TryGetValue(reqLink, out foundIp))
+            if (dnsTableV4.TryGetValue(reqLink, out foundIp))
             {
                 Console.WriteLine(reqLink + " - " + foundIp);
                 return IPAddress.Parse(foundIp);
