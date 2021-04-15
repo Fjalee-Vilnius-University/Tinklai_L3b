@@ -23,10 +23,11 @@ namespace DNS_simple_server
             Socket socFd = CreateSocket();
             IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
             EndPoint senderRemote = (EndPoint)sender;
-            byte[] buffer = new byte[maxLen];
 
             while (true)
             {
+                byte[] buffer = new byte[maxLen];
+
                 try
                 {
                     socFd.ReceiveFrom(buffer, ref senderRemote);
@@ -45,7 +46,7 @@ namespace DNS_simple_server
                 respMsg.RespIpAdress = respIpAdress;
                 respMsg.Build(queryMsg);
 
-                var sentBytes = socFd.SendTo(buffer, senderRemote);
+                var sentBytes = socFd.SendTo(respMsg.Buffer, senderRemote);
 
                 Console.WriteLine("received Buffer: " + BitConverter.ToString(queryMsg.Buffer));
                 Console.WriteLine("sent Buffer: " + BitConverter.ToString(respMsg.Buffer));
