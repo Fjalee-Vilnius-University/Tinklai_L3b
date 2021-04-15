@@ -8,7 +8,7 @@ namespace DNS_simple_server
     public class ResponseMessage
     {
         private const int maxLen = 513;
-        private const int ttl = 255;
+        private const int ttl = 137;
 
         public byte[] Buffer { get; set; }
         public IPAddress RespIpAdress { get; set; }
