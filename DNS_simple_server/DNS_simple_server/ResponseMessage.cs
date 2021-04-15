@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Net;
-using System.Net.Sockets;
 
 namespace DNS_simple_server
 {
@@ -53,11 +52,6 @@ namespace DNS_simple_server
 
             Buffer = new byte[offset];
             Array.Copy(tempBuffer, Buffer, offset);
-        }
-
-        public void Respond(Socket socFd)
-        {
-            socFd.Send(Buffer);
         }
 
         private byte[] BuildStatusBlock(QueryMessage queryMsg)

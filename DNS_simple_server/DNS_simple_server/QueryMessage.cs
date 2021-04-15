@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 
 namespace DNS_simple_server
 {
@@ -19,7 +17,6 @@ namespace DNS_simple_server
         private const int qCLASSLen = 2;
 
         public byte[] Buffer { get; } = new byte[maxLen];
-
         public byte[] Question { get; set; }
         public byte[] MessageId { get; set; } = new byte[messageIdLen];
         public byte[] Status { get; set; } = new byte[statusLen];
@@ -32,22 +29,9 @@ namespace DNS_simple_server
 
         public string ParsedDomainName { get; set; }
 
-
-
-        public QueryMessage(Socket socFd)
+        public QueryMessage(byte[] buffer)
         {
-            try
-            {
-                IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-                EndPoint senderRemote = (EndPoint)sender;
-
-                int recBytes;
-                recBytes = socFd.ReceiveFrom(Buffer, ref senderRemote);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception occured: \n\n" + e.ToString() + "\n");
-            }
+            Buffer = buffer;
         }
 
         public void Parse()

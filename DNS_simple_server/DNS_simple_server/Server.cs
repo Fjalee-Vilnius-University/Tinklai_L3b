@@ -9,6 +9,7 @@ namespace DNS_simple_server
 {
     public class Server
     {
+        private const int maxLen = 513;
         private readonly int port = 53;
         private readonly IPAddress dnsIp = IPAddress.Parse("127.0.0.1");
 
@@ -20,10 +21,22 @@ namespace DNS_simple_server
             GetDnsTable();
 
             Socket socFd = CreateSocket();
+            IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+            EndPoint senderRemote = (EndPoint)sender;
+            byte[] buffer = new byte[maxLen];
 
             while (true)
             {
-                var queryMsg = new QueryMessage(socFd);
+                try
+                {
+                    socFd.ReceiveFrom(buffer, ref senderRemote);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception occured: \n\n" + e.ToString() + "\n");
+                }
+
+                var queryMsg = new QueryMessage(buffer);
                 queryMsg.Parse();
 
                 var respIpAdress = GetIP(queryMsg.ParsedDomainName);
@@ -31,11 +44,12 @@ namespace DNS_simple_server
                 var respMsg = new ResponseMessage();
                 respMsg.RespIpAdress = respIpAdress;
                 respMsg.Build(queryMsg);
-                //respMsg.Respond(new IPEndPoint(dnsIp, port), socFd);
+
+                var sentBytes = socFd.SendTo(buffer, senderRemote);
 
                 Console.WriteLine("received Buffer: " + BitConverter.ToString(queryMsg.Buffer));
                 Console.WriteLine("sent Buffer: " + BitConverter.ToString(respMsg.Buffer));
-                //Console.WriteLine("Sent: " + socFd.Send(respMsg.Buffer, respMsg.Buffer.Length, sender) + " bytes");
+                Console.WriteLine("Sent: " + sentBytes + " bytes");
             }
         }
 
