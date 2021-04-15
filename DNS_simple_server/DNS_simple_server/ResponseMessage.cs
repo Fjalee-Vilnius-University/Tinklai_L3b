@@ -66,12 +66,12 @@ namespace DNS_simple_server
             Array.Copy(queryMsg.Status, 0, statusBlock, 0, statusBlock.Length);
 
             statusBlock = SetBitInByteArr(statusBlock, 7, true); //shows that its response
-            statusBlock = SetBitInByteArr(statusBlock, 2, true); //shows that authority server
+            statusBlock = SetBitInByteArr(statusBlock, 2, false); //not authoritive server
             statusBlock = SetBitInByteArr(statusBlock, 1, false); //no truncation
-            statusBlock = SetBitInByteArr(statusBlock, 0, false); //no recursion desired 
+            statusBlock = SetBitInByteArr(statusBlock, 0, true); //recursion desired 
 
             //Future
-            statusBlock = SetBitInByteArr(statusBlock, 15, false);
+            statusBlock = SetBitInByteArr(statusBlock, 15, true);
             statusBlock = SetBitInByteArr(statusBlock, 14, false);
             statusBlock = SetBitInByteArr(statusBlock, 13, false);
             statusBlock = SetBitInByteArr(statusBlock, 12, false);
