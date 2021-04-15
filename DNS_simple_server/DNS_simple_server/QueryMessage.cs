@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 
 namespace DNS_simple_server
@@ -37,8 +38,11 @@ namespace DNS_simple_server
         {
             try
             {
+                IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+                EndPoint senderRemote = (EndPoint)sender;
+
                 int recBytes;
-                recBytes = socFd.Receive(Buffer, 0, maxLen, 0);
+                recBytes = socFd.ReceiveFrom(Buffer, ref senderRemote);
             }
             catch (Exception e)
             {
