@@ -74,7 +74,7 @@ namespace DNS_simple_server
                 {
                     var websiteRgx = new Regex(@"^www\..*\..*$");
                     var ipv4Rgx = new Regex(@"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$");
-                    var ipv6Rgx = new Regex(@"^\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\$");
+                    var ipv6Rgx = new Regex(@":\d{0,4}");
 
                     if (websiteRgx.IsMatch(temp[0]) && ipv4Rgx.IsMatch(temp[1]))
                     {
@@ -117,6 +117,7 @@ namespace DNS_simple_server
                 return null;
             }
         }
+
         private IPAddress GetIPv6(string reqLink)
         {
             string foundIp;
