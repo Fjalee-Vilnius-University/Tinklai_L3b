@@ -15,10 +15,11 @@ namespace DNS_simple_server
 
         private readonly string dnsTablePath = @"../../../../dnsTable.txt";
         private readonly Dictionary<string, string> dnsTableV4 = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> dnsTableV6 = new Dictionary<string, string>();
 
         public Server()
         {
-            GetdnsTableV4();
+            GetdnsTable();
 
             Socket socFd = CreateSocket();
             IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
@@ -54,7 +55,7 @@ namespace DNS_simple_server
             }
         }
 
-        private void GetdnsTableV4()
+        private void GetdnsTable()
         {
             foreach (string line in File.ReadLines(dnsTablePath))
             {
@@ -62,9 +63,10 @@ namespace DNS_simple_server
                 if (temp.Length == 2)
                 {
                     var websiteRgx = new Regex(@"^www\..*\..*$");
-                    var ipRgx = new Regex(@"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$");
+                    var ipv4Rgx = new Regex(@"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$");
+                    var ipv6Rgx = new Regex(@"^\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\:\d{0,4}\$");
 
-                    if (websiteRgx.IsMatch(temp[0]) && ipRgx.IsMatch(temp[1]))
+                    if (websiteRgx.IsMatch(temp[0]) && ipv4Rgx.IsMatch(temp[1]))
                     {
                         try
                         {
@@ -72,7 +74,18 @@ namespace DNS_simple_server
                         }
                         catch
                         {
-                            Console.WriteLine("website " + temp[0] + " already has anotehr ip assigned to it");
+                            Console.WriteLine("website " + temp[0] + " already has anotehr ipv4 assigned to it");
+                        }
+                    }
+                    else if (websiteRgx.IsMatch(temp[0]) && ipv6Rgx.IsMatch(temp[1]))
+                    {
+                        try
+                        {
+                            dnsTableV6.Add(temp[0].Substring(4), temp[1]);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("website " + temp[0] + " already has another ipv6 assigned to it");
                         }
                     }
                 }
