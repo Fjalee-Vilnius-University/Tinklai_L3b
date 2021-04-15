@@ -53,8 +53,7 @@ namespace DNS_simple_server
                     respIpAdress = GetIPv4(queryMsg.ParsedDomainName);
                 }
 
-                var respMsg = new ResponseMessage();
-                respMsg.RespIpAdress = respIpAdress;
+                var respMsg = new ResponseMessage(respIpAdress);
                 respMsg.Build(queryMsg);
 
                 var sentBytes = socFd.SendTo(respMsg.Buffer, senderRemote);
