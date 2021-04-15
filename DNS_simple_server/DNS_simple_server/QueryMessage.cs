@@ -81,7 +81,7 @@ namespace DNS_simple_server
 
         private byte[] ParseQuestion(int offset, int initOffset, byte[] Buffer)
         {
-            var respDomainNameLen = offset - initOffset + 1;
+            var respDomainNameLen = offset - initOffset;
             var respDomainName = new byte[respDomainNameLen];
             Array.Copy(Buffer, initOffset, respDomainName, 0, respDomainNameLen);
             return respDomainName;
@@ -96,6 +96,7 @@ namespace DNS_simple_server
                 labels.Add(ParseLabel(Buffer, ref offset));
             }
 
+            offset++;
             return labels.Aggregate((i, j) => i + "." + j);
         }
 
