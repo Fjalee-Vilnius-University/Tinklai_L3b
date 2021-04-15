@@ -31,7 +31,11 @@ namespace DNS_simple_server
                 var respMsg = new ResponseMessage();
                 respMsg.RespIpAdress = respIpAdress;
                 respMsg.Build(queryMsg);
-                respMsg.Respond(new IPEndPoint(dnsIp, port), socFd);
+                //respMsg.Respond(new IPEndPoint(dnsIp, port), socFd);
+
+                Console.WriteLine("received Buffer: " + BitConverter.ToString(queryMsg.Buffer));
+                Console.WriteLine("sent Buffer: " + BitConverter.ToString(respMsg.Buffer));
+                //Console.WriteLine("Sent: " + socFd.Send(respMsg.Buffer, respMsg.Buffer.Length, sender) + " bytes");
             }
         }
 

@@ -17,7 +17,7 @@ namespace DNS_simple_server
         private const int qTYPELen = 2;
         private const int qCLASSLen = 2;
 
-        private readonly byte[] buffer = new byte[maxLen];
+        public byte[] Buffer { get; } = new byte[maxLen];
 
         public byte[] Question { get; set; }
         public byte[] MessageId { get; set; } = new byte[messageIdLen];
@@ -38,7 +38,7 @@ namespace DNS_simple_server
             try
             {
                 int recBytes;
-                recBytes = socFd.Receive(buffer, 0, maxLen, 0);
+                recBytes = socFd.Receive(Buffer, 0, maxLen, 0);
             }
             catch (Exception e)
             {
@@ -50,64 +50,65 @@ namespace DNS_simple_server
         {
             int offset = 0;
 
-            MessageId = ParseBlock(buffer, messageIdLen, ref offset);
-            Status = ParseBlock(buffer, statusLen, ref offset);
-            NmQuestions = ParseBlock(buffer, nmQuestionsLen, ref offset);
-            NmAnswers = ParseBlock(buffer, nmAnswersLen, ref offset);
-            NameServerRec = ParseBlock(buffer, nameServerRecLen, ref offset);
-            AddServerRec = ParseBlock(buffer, addServerRecLen, ref offset);
+            MessageId = ParseBlock(Buffer, messageIdLen, ref offset);
+            Status = ParseBlock(Buffer, statusLen, ref offset);
+            NmQuestions = ParseBlock(Buffer, nmQuestionsLen, ref offset);
+            NmAnswers = ParseBlock(Buffer, nmAnswersLen, ref offset);
+            NameServerRec = ParseBlock(Buffer, nameServerRecLen, ref offset);
+            AddServerRec = ParseBlock(Buffer, addServerRecLen, ref offset);
 
             var initOffset = offset;
-            ParsedDomainName = ParseDomainName(buffer, ref offset);
-            Question = ParseQuestion(offset, initOffset, buffer);
+            ParsedDomainName = ParseDomainName(Buffer, ref offset);
+            Question = ParseQuestion(offset, initOffset, Buffer);
 
-            QTYPE = ParseBlock(buffer, qTYPELen, ref offset);
-            QCLASS = ParseBlock(buffer, qCLASSLen, ref offset);
+            QTYPE = ParseBlock(Buffer, qTYPELen, ref offset);
+            QCLASS = ParseBlock(Buffer, qCLASSLen, ref offset);
 
             //fix delete
-            Console.WriteLine("Received: " + System.Text.Encoding.Default.GetString(buffer));
+            Console.WriteLine("Received: " + System.Text.Encoding.Default.GetString(Buffer));
+            Console.WriteLine("QTYPE: " + BitConverter.ToString(QTYPE));
             Console.WriteLine("Response domainName: " + System.Text.Encoding.Default.GetString(Question));
             Console.WriteLine("Parsed: " + ParsedDomainName + "\n");
         }
 
-        private byte[] ParseBlock(byte[] buffer, int blockLen, ref int offset)
+        private byte[] ParseBlock(byte[] Buffer, int blockLen, ref int offset)
         {
             byte[] parsedBlock = new byte[blockLen];
-            Array.Copy(buffer, offset, parsedBlock, 0, blockLen);
+            Array.Copy(Buffer, offset, parsedBlock, 0, blockLen);
             offset += blockLen;
             return parsedBlock;
         }
 
-        private byte[] ParseQuestion(int offset, int initOffset, byte[] buffer)
+        private byte[] ParseQuestion(int offset, int initOffset, byte[] Buffer)
         {
             var respDomainNameLen = offset - initOffset + 1;
             var respDomainName = new byte[respDomainNameLen];
-            Array.Copy(buffer, initOffset, respDomainName, 0, respDomainNameLen);
+            Array.Copy(Buffer, initOffset, respDomainName, 0, respDomainNameLen);
             return respDomainName;
         }
 
-        private string ParseDomainName(byte[] buffer, ref int offset)
+        private string ParseDomainName(byte[] Buffer, ref int offset)
         {
             var labels = new List<string>();
 
-            for (int i = 0; Convert.ToInt16(buffer[offset]) != 0; i++)
+            for (int i = 0; Convert.ToInt16(Buffer[offset]) != 0; i++)
             {
-                labels.Add(ParseLabel(buffer, ref offset));
+                labels.Add(ParseLabel(Buffer, ref offset));
             }
 
             return labels.Aggregate((i, j) => i + "." + j);
         }
 
-        private string ParseLabel(byte[] buffer, ref int offset)
+        private string ParseLabel(byte[] Buffer, ref int offset)
         {
             var label = new byte[maxLen];
-            var labelLen = Convert.ToInt16(buffer[offset]);
+            var labelLen = Convert.ToInt16(Buffer[offset]);
             int i;
 
             for (i = 1; i <= labelLen; i++)
             {
-                label[i] = buffer[offset + i];
-                System.Text.Encoding.Default.GetString(buffer);
+                label[i] = Buffer[offset + i];
+                System.Text.Encoding.Default.GetString(Buffer);
             }
 
             offset += i;
