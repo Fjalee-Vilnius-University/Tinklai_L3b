@@ -2,5 +2,5 @@ www.yahoo.com 185.23.5.9
 www.tamo.lt 142.67.8.3
 www.youtube.com 216.58.215.110
 www.youtube.com 2a00:1450:401b:806::200e
-www.namai2021.lt 192.168.17.113
+www.namai2021.lt 194.28.232.175
 www.google.com 172.217.16.4
